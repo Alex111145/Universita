@@ -1,0 +1,317 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+\f3\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red191\green100\blue38;\red32\green32\blue32;\red254\green187\blue91;
+\red153\green168\blue186;\red86\green132\blue173;\red88\green118\blue71;\red133\green96\blue154;\red204\green108\blue29;
+\red217\green232\blue247;\red18\green144\blue195;\red249\green250\blue244;\red128\green128\blue128;}
+{\*\expandedcolortbl;;\csgenericrgb\c74902\c39216\c14902;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c99608\c73333\c35686;
+\csgenericrgb\c60000\c65882\c72941;\csgenericrgb\c33725\c51765\c67843;\csgenericrgb\c34510\c46275\c27843;\csgenericrgb\c52157\c37647\c60392;\csgenericrgb\c80000\c42353\c11373;
+\csgenericrgb\c85098\c90980\c96863;\csgenericrgb\c7059\c56471\c76471;\csgenericrgb\c97647\c98039\c95686;\csgenericrgb\c50196\c50196\c50196;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+\
+\
+package socket;\
+\
+import java.io.*;\
+import java.net.*;\
+\
+public class server \{\
+\
+	public static final int PORT = 8080;\
+	\
+	public static void main(String[] args) \{\
+		ServerSocket ss = null;\
+		//Partita partita = new Partita(2); // numero di giocatori\
+		try \{\
+			ss = new ServerSocket(PORT);\
+			System.out.println("server ready");\
+			while(true) \{\
+				Socket cliSocket = ss.accept();\
+				new serverSlave(cliSocket).start();\
+			\} \
+		\}catch(IOException e) \{\
+			e.printStackTrace();\
+		\} finally \{\
+			if(ss!= null)\{\
+				try \{\
+					ss.close();\
+				\}catch(IOException e) \{\}\
+			\}\
+		\}\
+		\
+	\}\
+\}\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+package socket;\
+\
+import java.io.IOException;\
+import java.io.ObjectInputStream;\
+import java.io.ObjectOutputStream;\
+import java.net.Socket;\
+\
+public class serverSlave extends Thread \{\
+	private Socket s;\
+	private ObjectInputStream in;\
+	private ObjectOutputStream out;\
+\
+	protected serverSlave(Socket socket) throws IOException \{\
+		s = socket;\
+		out = new ObjectOutputStream(s.getOutputStream());\
+		in = new ObjectInputStream(s.getInputStream());\
+	\}\
+	\
+	public void exec(String str) throws ClassNotFoundException, IOException\{\
+		if(str.equals("write")) \{\
+			String message = (String)in.readObject();\
+			//myDeposito.write(message);\
+		\}\
+		if(str.equals("read")) \{\
+			//long lasttime = (long)in.readObject();\
+			//Informazione informazione = myDeposito.read(lasttime);\
+			//out.writeObject(informazione);\
+		\}\
+	\}\
+	\
+	public void run() \{\
+		String command = "";\
+		boolean finito = false;\
+		System.out.println("slave started");\
+		try \{\
+			while(!finito) \{\
+				command=(String) in.readObject();\
+				System.out.println("command " + command + " received");\
+				if(command.equals("END")) \{\
+					finito = true;\
+				\}\
+				else \{\
+					try \{\
+						exec(command);\
+					\} catch (ClassNotFoundException | IOException e) \{\
+						e.printStackTrace();\
+					\}\
+				\}\
+			\}\
+		\} catch (ClassNotFoundException | IOException e1) \{\
+			e1.printStackTrace();\
+		\}finally \{\
+			try \{\
+				s.close();\
+			\} catch (IOException e) \{ \}\
+		\}\
+	\}\
+\}\
+\
+\
+\
+\
+\
+\
+\
+\
+package socket;\
+\
+\
+import java.io.IOException;\
+import java.io.ObjectInputStream;\
+import java.io.ObjectOutputStream;\
+import java.net.InetAddress;\
+import java.net.Socket;\
+import java.util.Random;\
+import java.util.concurrent.ThreadLocalRandom;\
+\
+public class Client \{\
+	String name;\
+	Random rndRandom;\
+	ObjectInputStream in;\
+	ObjectOutputStream out;\
+	Client() \{\
+		rndRandom = new Random();\
+		this.name="Client_" + rndRandom.nextInt(100);\
+	\}\
+	public void exec() throws IOException, ClassNotFoundException\{\
+		InetAddress myAddress = InetAddress.getByName(null);\
+		Socket cSocket = new Socket(myAddress, 8080);\
+		out = new ObjectOutputStream(cSocket.getOutputStream());\
+		in = new ObjectInputStream(cSocket.getInputStream());\
+		long lastTime=System.currentTimeMillis()-1000000;\
+		for(int j=0; j<10; j++) \{\
+			try \{\
+				Thread.sleep(ThreadLocalRandom.current().nextInt(300));\
+			\} catch (InterruptedException e) \{ \}\
+			Informazione lettura;\
+			out.writeObject("read");\
+			out.writeObject(lastTime);\
+			lettura = (Informazione)in.readObject();\
+			System.out.println(name+" leggo "+lettura);\
+			lastTime=lettura.getInfoTime();\
+		\}\
+\
+		out.writeObject("END");\
+		out.flush();\
+		cSocket.close();\
+	\}\
+\
+	public static void main(String[] args)\{\
+		try \{\
+			new Client().exec();\
+		\} catch (ClassNotFoundException | IOException e) \{\
+			System.err.println("Client KO");\
+		\}\
+	\}\
+\}\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+RMI\
+MAIN SERVER\
+public static void main(String[] args) \{\
+		try \{\
+			CodaImpl codaServer=new CodaImpl();\
+			Registry reg=LocateRegistry.createRegistry(1099);\
+			reg.rebind(\'93server\'94, codaServer);\
+		\} catch (RemoteException e) \{\
+			System.out.println("server main failed");\
+		\}\
+	\}\
+\
+MAIN CLIENT\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 public void \cf4 exec\cf5 ()\cf2 throws \cf5 RemoteException\cf2 , \cf5 NotBoundException \{\
+    Registry reg= LocateRegistry.
+\f2\i getRegistry
+\f1\i0 (\cf6 1099\cf5 )\cf2 ;\
+    \cf5 interfacciaServer buffer= (interfacciaServer) reg.lookup(\cf7 \'93server\'94\cf5 )\cf2 ;\
+    for\cf5 (\cf2 int \cf5 i=\cf6 0\cf2 ; \cf5 i<\cf8 numIterations\cf2 ; \cf5 i++)\{\
+        \cf8 v\cf5 =buffer.getItem()\cf2 ;\
+        try \cf5 \{\
+            Thread.
+\f2\i sleep
+\f1\i0 (ThreadLocalRandom.
+\f2\i current
+\f1\i0 ().nextInt(\cf6 300\cf5 ))\cf2 ;\
+        \cf5 \} \cf2 catch \cf5 (InterruptedException e) \{ \}\
+    \}\
+    System.
+\f2\i \cf8 out
+\f1\i0 \cf5 .println(\cf8 name\cf5 +\cf7 ": termino"\cf5 )\cf2 ;\
+\cf5 \}\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \
+public static void main(String[] args) \{\
+		try \{\
+			new LettoreImpl(8).exec();\
+		\} catch (RemoteException | NotBoundException e) \{\
+			System.out.println("Consumatore KO");\
+		\}\
+	\}\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+ricordarsi\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3 \cf9 public\cf10  \cf9 class\cf10  \cf11 AttesaAvendoUnParametro\cf10  \cf12 \{\cf0 \
+\
+\cf10 	\cf13 /*\cf0 \
+\cf13 	 * public synchronized \ul Informazione\ulnone  read(long lastTime) throws InterruptedException \{\cf0 \
+\cf13 		while(lastTime >= informazione.getInfoTime()) \{\cf0 \
+\cf13 			try \{\cf0 \
+\cf13 				wait();\cf0 \
+\cf13 			\}catch(InterruptedException e) \{\}\cf0 \
+\cf13 		\}\cf0 \
+\cf13 		return \ul informazione\ulnone ;\cf0 \
+\cf13 	\}\cf0 \
+\cf13 	 */\
+\
+\
+\
+\
+\
+\cf9 public\cf10  \cf9 class\cf10  \cf11 AttesaMax\cf10  \cf12 \{\cf0 \
+\cf13 /* \ul appello\ulnone  6giugno2022\cf0 \
+\cf13  * 		CLASSE CODA QUELLA CHE MODIFICO SOLUTAMENTE\cf0 \
+\cf13  * \cf0 \
+\cf13 	public synchronized readItem(\ul int\ulnone  attesaMax) \{\cf0 \
+\cf13 		long t0 = System.currentTimeMillis();\cf0 \
+\cf13 		long tFine = t0+1000*attesaMax;\cf0 \
+\cf13 		while(numItems == 0 && tFine>t0) \{\cf0 \
+\cf13 			try \{\cf0 \
+\cf13 				wait(tFine-t0);\cf0 \
+\cf13 				t0 = System.currentTimeMillis();\cf0 \
+\cf13 			\}catch(InterruptedException e) \{\}\cf0 \
+\cf13 		\}\cf0 \
+\cf13 		return \ul tmp\ulnone ;\cf0 \
+\cf13 	\}\cf0 \
+\
+\cf13 		public void run()\{\cf0 \
+\cf13 		for(\ul int\ulnone  i=0; i<numIterations; i++)\{\cf0 \
+\cf13 			v=buffer.readItem(1); //ATTESA 1 SEC\cf0 \
+\cf13 			try \{\cf0 \
+\cf13 				Thread.sleep(ThreadLocalRandom.current().nextInt(500)); //500 DATO DAL PROF \cf0 \
+\cf13 			\} catch (InterruptedException e) \{ \}\cf0 \
+\cf13 		\}\cf0 \
+\cf13 		System.out.println(this.getName()+": \ul termino\ulnone ");\cf0 \
+\cf13 	\}\cf0 \
+\cf13 */\cf0 \
+\cf10 	\cf0 \
+\cf12 \}\cf0 \
+\cf12 \}
+\f0 \cf0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+}

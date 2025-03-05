@@ -1,0 +1,7 @@
+La soluzione di questo esercizio e` piuttosto complessa. Bastava dunque descrive l'organizzazione della soluzione. Una possibile organizzazione e` la seguente.
+
+Lato client la cosa e` abbastanza semplice: il lettore puo` dotarsi di un thread slave al quale passare lo stream di ingresso, che quest'ultimo ultilizzera` per ricevere i nuovi elementi dal server. NB: Il lettore non usa lo stream di ingresso, quindi puo` lasciarne l'uso esclusivo allo slave. Se il lettore vuole fare una lettura puo` mandare la richiesta al server e lasciare che lo slave riceva la risposta. In ogni caso, tutto quello che viene ricevuto dallo slave viene messo a disposizione del lettore master.
+
+Lato server la cosa e` un po' piu` complessa. Il server potrebbe creare un oggetto "elencoClient" che contiene la lista dei client cui mandare notifica e passarlo a tutti gli slave.
+Gli slave dovrebbero ricevere dai client come prima comunicazione un'infomazione sul ruolo del client: produttori e consumatori possono essere ignorati. Viceversa, per i lettori lo stream di output viene memorizzato nell'elencoClient.
+Ogni volta che unii slave riceve da un produttore un nuovo Elemento, fa la notifica a tutti i lettori mediante un opportuno metodo dell'elencoClient.  

@@ -1,0 +1,2 @@
+1. INDIVIDUARE LA CLASSE CONDIVISA E METTERE NEI METODI GIUSTI WAIT E NOTIFY O NOTIFY ALL 
+2. METTERE TUTTI I METODI synchronized che modifico ( quelli dove metto wait e notify e quello che presenta tutti e due)

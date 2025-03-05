@@ -1,0 +1,10 @@
+prendere il codice dal socket
+
+0.            copio tutto il file della classe condivisa del esercizio precedente
+1.            elimino server e SLAVETHREAD
+2.            creare file server copiando tutti i metodi syncronize ( togliendo synchronized) e  mettendo tutti public e mettendo interface
+3.            creo serverimpl copiando tutti i metodi da file server creato nel passo 2 e nel caso non abbiano void scrivere 
+              Si copiano tutti I metodi che si trovano dentro server e si fa il return nel caso fossero diversi da void.
+           mettere extend e implements classe server
+              creare il main 
+

@@ -1,0 +1,17 @@
+  prendere il codice dalla concorrenza
+  
+  1.               TOLGO IL MAIN 
+
+  2. (OPZIONALE)    CERCO LA CLASSE RISORSA ( FILE CON TUTTI I METODI CON RETURN ( NON È NE IL MAIN NE QUELLA CON WAIT))
+                    IMPLEMENTO NEL NOME DELLA CLASSE ---> implements Serializable 
+                    NELLE VARIABILI AGGIserv
+
+  3.                MODIFICO LA CLASSE CLIENT ( quella con extend thread) ( guardare spiegazione)
+                    ricordarsi di mettere il main 
+                    
+  
+  4.          CREO LA CLASSE SERVER (GUARDARE FILE SERVER.JAVA)
+
+  5.               CREO LA CLASSE SLAVETHREAD ( GUARDARE FILE SLAVETHREAD.JAVA)   
+
+
